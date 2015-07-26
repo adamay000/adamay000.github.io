@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="ja">
+<head>
+	<meta charset="utf-8" />
+	<title>Viprin's Drawing Editor!</title>
+	<link rel="stylesheet" type="text/css" media="screen,projection" href="./files/common.css" />
+	<link rel="stylesheet" href="./files/colorpicker.css" type="text/css" />
+	<script type="text/javascript" src="./files/jquery.js"></script>
+	<script type="text/javascript" src="./files/jquery.center.js"></script>
+	<script type="text/javascript" src="./files/processing.js"></script>
+	<script type="text/javascript" src="./files/jquery-ui.js"></script>
+	<script type="text/javascript" src="./files/yui-min.js"></script>
+	<script type="text/javascript" src="./files/slider.js"></script>
+	<script type="text/javascript" src="./files/colorpicker.js"></script>
+	<script type="text/javascript" src="./files/draw-1.4.3.min.js"></script>
+</head>
+<body>
+<header>
+	<div id="information"><p style="font-size: 24px;">Please use Firefox or Chrome, and turn ON javascript to use Viprin's Drawing Editor. It doesn't work on IE and Opera D:</p></div>
+	<ul id="hist">
+	</ul>
+	<nav id="topmenu">
+		<h1>Viprin's Drawing Editor!</h1>
+		<p>1.4.3</p>
+		<div class="yui3-skin-sam">
+			<label for="zoom">Zoom:</label>
+			<input id="zoom" value="1.0" name="zoom" size="3" />
+			<span class="zoom"></span>
+		</div>
+		<article>
+			<h1>Settings</h1>
+			<ul>
+				<li onclick="winPop('background')">Background properties</li>
+				<li class="group">
+					<ul>
+						<li>Selectors</li>
+						<li id="start" class="on" onclick="setHelper('start')">Show "start cross" [S]</li>
+						<li id="middle" class="on" onclick="setHelper('middle')">Show "middle cross" [M]</li>
+						<li id="end" class="on" onclick="setHelper('end')">Show "end cross" [E]</li>
+						<!--<li id="target" class="on" onclick="setHelper('target')">Show "target" [T]</li>-->
+						<li id="bezier1" class="on" onclick="setHelper('bezier1')">Show "bezier1"</li>
+						<li id="bezier2" class="on" onclick="setHelper('bezier2')">Show "bezier2"</li>
+					</ul>
+				</li>
+				<li id="scroll" class="off" onclick="setScroll()">Set L="1600"</li>
+			</ul>
+		</article>
+		<article>
+			<h1>Save/Load</h1>
+			<ul>
+				<li onclick="winPop('load')">Load XML</li>
+				<li onclick="winPop('xml');generateXML()">Generate XML(Recommended)</li>
+				<li onclick="winPop('xml');generateXML('min')">Generate XML with compressing</li>
+				<li onclick="winPop('xml');generateXML('cjobjects')">Generate XML for cjobjects</li>
+			</ul>
+		</article>
+		<article>
+			<h1>Help</h1>
+			<ul>
+				<li onclick="winPop('help')">Help</li>
+				<li onclick="winPop('history');historyDisplay()">History</li>
+				<li onclick="winPop('log')">Changelog</li>
+				<li onclick="window.open('http://www.transformice.com/forum/?s=162564');return false"><a href="http://www.transformice.com/forum/?s=162564" target="_blank">Visit thread on TFM forum</a></li>
+			</ul>
+		</article>
+	</nav>
+</header>
+<section id="menu">
+	<article id="layer" class="draggable">
+		<h1>Layer</h1>
+		<p id="layerInfo">Layer: 1, Elements: 0</p>
+		<button id="addLayer" onclick="addLayer()">New layer</button>
+		<ul id="layers">
+			<li>layer</li>
+		</ul>
+	</article>
+	<article id="selected" class="draggable">
+		<h1>Selected Element</h1>
+		<table>
+			<tr>
+				<th>Z</th>
+				<td colspan="2"><input type="text" id="selectedZ" /> <img src="./images/tree_off.gif" onclick="elementOrderDown()" alt="-"> <img src="./images/tree_on.gif" onclick="elementOrderUp()" alt="+"> <button class="disable" id="selectedDelete" onclick="selectedDelete(this)">DELETE</button></td>
+			</tr>
+			<tr>
+				<th>P1</th>
+				<td>X: <input type="text" id="selectedX1" /></td>
+				<td>Y: <input type="text" id="selectedY1" /></td>
+			</tr>
+			<tr>
+				<th>P2</th>
+				<td>X: <input type="text" id="selectedX2" /></td>
+				<td>Y: <input type="text" id="selectedY2" /></td>
+			</tr>
+			<tr>
+				<th>C1</th>
+				<td>X: <input type="text" id="selectedC1X" /></td>
+				<td>Y: <input type="text" id="selectedC1Y" /></td>
+			</tr>
+			<tr>
+				<th>C2</th>
+				<td>X: <input type="text" id="selectedC2X" /></td>
+				<td>Y: <input type="text" id="selectedC2Y" /></td>
+			</tr>
+			<tr>
+				<th>Color: </th>
+				<td colspan="2">
+					<input type="text" maxlength="6" size="8" class="cp selected" id="selectedColor" value="" />
+					<button class="disable" id="selectedForeground" onclick="selectedForeground(this)">BACKGROUND</button>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3" class="slider">
+					<div class="yui3-skin-sam">
+						<label for="selectedWeight">Weight:</label>
+						<input id="selectedWeight" value="" name="selectedWeight" size="16" />
+						<span class="selectedWeight"></span>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3" class="slider">
+					<div class="yui3-skin-sam">
+						<label for="selectedAlpha">Alpha:</label>
+						<input id="selectedAlpha" value="" name="selectedAlpha" size="16" />
+						<span class="selectedAlpha"></span>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3"><hr /></td>
+			</tr>
+			<tr>
+				<td colspan="3" class="slider">
+					<div class="yui3-skin-sam">
+						<label for="selectedFineness">Fineness:</label>
+						<input id="selectedFineness" value="" name="selectedFineness" size="16" />
+						<span class="selectedFineness"></span>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</article>
+	<article id="linetool" class="draggable">
+		<h1>Draw Tool</h1>
+		<div>
+			<canvas id="preview" width="180" height="180"></canvas>
+			<p>
+			Color: <input type="text" maxlength="6" size="8" class="cp line" id="color" value="ffffff" />
+			<button class="off" onclick="foreground(this)">BACKGROUND</button>
+			</p>
+			<div class="yui3-skin-sam">
+				<label for="weight">Weight:</label>
+				<input id="weight" value="2" name="weight" size="16" />
+				<span class="weight"></span>
+				<br />
+				<label for="alpha">Alpha:</label>
+				<input id="alpha" value="100" name="alpha" size="16" />
+				<span class="alpha"></span>
+			</div>
+			<hr />
+			<input type="checkbox" id="bezier" /> Use Bezier curve<br />
+			<div class="yui3-skin-sam">
+				<label for="fineness">Fineness:</label>
+				<input id="fineness" value="30" name="fineness" size="16" />
+				<span class="fineness"></span>
+			</div>
+		</div>
+	</article>
+</section>
+<section id="popup">
+	<article id="background">
+		<h1>Background properties</h1>
+		<p class="notify1">When you try to load an image, it may say "Image does not exist". It means an error has occured. Please try  again, or choose another image.</p>
+		<p>Choose an image file from your LOCAL.<br /><input type="file" name="image" id="bgImageLocal" size="64" onchange="setBackgroundImage('local', this)" /></p>
+		<p>Type url of an image from WEB.<br /><input type="text" name="image" id="bgImageWeb" size="64" /><input type="submit" value="submit" onclick="setBackgroundImage('web')" /></p>
+		<p class="notify2">I + DRAG(LEFT): Move the image.</p>
+		<br />
+		<div class="yui3-skin-sam">
+			<label for="imgAlpha">imgAlpha:</label>
+			<input id="imgAlpha" value="100" name="imgAlpha" size="16" />
+			<span class="imgAlpha"></span>
+		</div>
+		<div class="yui3-skin-sam">
+			<label for="imgZoom">imgZoom:</label>
+			<input id="imgZoom" value="1.0" name="imgZoom" size="16" />
+			<span class="imgZoom"></span>
+		</div>
+		<p>Do you want to show an image in front?: <button id="imgForeground" class="off" onclick="setImgForeground(this)">BACKGROUND</button></p>
+		<br />
+		<p>BackgroundColor: <input type="text" maxlength="6" size="8" class="cp backgroundColor" id="backgroundColor" value="6a7495" /> (Default color is #6a7495)</p>
+	</article>
+	<article id="history">
+		<h1>History</h1>
+		<ul>
+			<li>History</li>
+		</ul>
+	</article>
+	<article id="xml">
+		<h1 id="xmlTitle">Generate XML</h1>
+		<p id="xmlCaution">Copy and Paste the XML to tfm editor, and make 1 ground at least, then validate the map!</p>
+		<textarea id="xmlText" wrap="hard"></textarea>
+		<button onclick="$('#xmlText')[0].focus();$('#xmlText')[0].select()">Select</button>
+	</article>
+	<article id="load">
+		<h1>Load</h1>
+		<p>It only loads tags of following format. Other tags will be ignored(including M1 and M2).<br />&lt;JD P1="x,y" P2="x,y" c="color,weight,alpha,foreground" /&gt;</p>
+		<textarea id="xmlLoad"></textarea>
+		<button onclick="load();winPop('close')">Load</button>
+	</article>
+	<article id="log">
+		<h1>Changelog</h1>
+		<dl>
+			<dt>11/02/13 - Version 1.4.3</dt>
+			<dd>Added "Generate XML for cjobjects".</dd>
+			<dt>11/02/13 - Version 1.4.2</dt>
+			<dd>Improved compressing function.</dd>
+			<dt>09/02/13 - Version 1.4.1</dt>
+			<dd>Fixed "flip layer" doesn't work properly for curve.</dd>
+			<dt>09/02/13 - Version 1.4.0</dt>
+			<dd>Added layer related functions. Copy/Merge/Flip/Move are now available.</dd>
+			<dd>Fixed a bug.</dd>
+			<dt>08/02/13 - Version 1.3.6</dt>
+			<dd>Fixed some bugs.</dd>
+			<dt>02/02/13 - Version 1.3.5</dt>
+			<dd>Added a property that you can show an image in front.</dd>
+			<dd>Fixed keypress problems.</dd>
+			<dt>30/01/13 - Version 1.3.4</dt>
+			<dd>You are now able to change Z value of elements from input box.</dd>
+			<dt>06/01/13 - Version 1.3.3</dt>
+			<dd>Improved loading function.</dd>
+			<dt>06/01/13 - Version 1.3.2</dt>
+			<dd>Added imzZoom.</dd>
+			<dt>05/01/13 - Version 1.3.1</dt>
+			<dd>Fixed it can't load an image from local.</dd>
+			<dt>05/01/13 - Version 1.3.0</dt>
+			<dd>Added "Background properties".</dd>
+			<dd>Added Undo(Z key) and Redo(Y key).</dd>
+			<dd>Changed layout.</dd>
+			<dd>Changed a lot of small things.</dd>
+			<dd>Fixed keypress problem.</dd>
+			<dt>27/12/12 - Version 1.2.6</dt>
+			<dd>Fixed a bug.</dd>
+			<dt>22/12/12 - Version 1.2.5</dt>
+			<dd>Added Copy(C key) and Paste(V key).</dd>
+			<dd>Added scroll option.</dd>
+			<dt>21/12/12 - Version 1.2.4</dt>
+			<dd>Fixed layer related problem.</dd>
+			<dt>20/12/12 - Version 1.2.3</dt>
+			<dd>Fixed curve related problems.</dd>
+			<dd>Changed the limit of fineness to 30 from 120.</dd>
+			<dd>Added "Generate min XML". You can't load the xml in this editor when you choose this.</dd>
+			<dt>19/12/12 - Version 1.2.2</dt>
+			<dd>Fixed "SPACE + DRAG".</dd>
+			<dt>19/12/12 - Version 1.2.1</dt>
+			<dd>Capacity is shown at the left top when it generates XML.</dd>
+			<dt>19/12/12 - Version 1.2.0</dt>
+			<dd>Added "curve tool"! You can draw curve by using bezier.</dd>
+			<dd>Fixed "some window cannot be placed on other window".</dd>
+			<dt>18/12/12 - Version 1.1.1</dt>
+			<dd>Fixed an error.</dd>
+			<dt>18/12/12 - Version 1.1.0</dt>
+			<dd>Added "Zoom".</dd>
+			<dt>17/12/12 - Version 1.0.1</dt>
+			<dd>Fixed color selecting problem.</dd>
+			<dt>17/12/12 - Version 1.0.0</dt>
+			<dd>Added "Selected Element". You can edit the line now!</dd>
+			<dt>16/12/12 - Version 0.9.1</dt>
+			<dd>Fixed "Generate XML".</dd>
+			<dt>16/12/12 - Version 0.9.0</dt>
+			<dd>Added "Layer".</dd>
+			<dt>15/12/12 - Version 0.8.2</dt>
+			<dd>Changed some stuffs.</dd>
+			<dt>12/12/12 - Version 0.8.1</dt>
+			<dd>Fixed "can't load alpha" problem.</dd>
+			<dt>11/12/12 - Version 0.8.0</dt>
+			<dd>Added line tool, loading function.</dd>
+			<dt>10/12/12 - Version 0.7.0</dt>
+			<dd>Prereleased.</dd>
+		</dl>
+	</article>
+	<article id="help">
+		<h1>Help</h1>
+		<p>To show your art correctly, you need to set STATIC ground as Z = 0. It can't be DYNAMIC ground.</p>
+		<p>Please use Firefox or Chrome if it doesn't work on other browsers. There might be a lot of bugs, I'm happy if you give me bug report and feedbacks! If you have questions/suggestions, please post it <a href="http://www.transformice.com/forum/?s=162564" target="_blank">here</a>.</p>
+		<br />
+		<p class="notify2">Hint:</p>
+		<p>You can rightclick on layer name to connect your art to dynamic ground.</p>
+		<p>You will be able to move/copy/resize/flip layer in future.</p>
+		<dl>
+			<dt>Drag(LEFT)</dt>
+			<dd>Draw new line.</dd>
+			<dt>SPACE + Drag(LEFT)</dt>
+			<dd>Move canvas.</dd>
+			<dt>R, ESC</dt>
+			<dd>Reset canvas place.</dd>
+			<dt>D, DELETE</dt>
+			<dd>Delete an element.</dd>
+			<dt>C</dt>
+			<dd>Copy an element.</dd>
+			<dt>V</dt>
+			<dd>Paste an element.</dd>
+			<dt>Z</dt>
+			<dd>Undo.</dd>
+			<dt>Y</dt>
+			<dd>Redo.</dd>
+			<dt>LEFT, UP, RIGHT, DOWN</dt>
+			<dd>Move an element to each direction.</dd>
+			<dt>I + DRAG(LEFT)</dt>
+			<dd>Move the image.</dd>
+			<dt>S, M, E</dt>
+			<dd>Toggle selecter.</dd>
+		</dl>
+	</article>
+</section>
+<canvas id="canvas" width="800" height="600"></canvas>
+</body>
+</html>

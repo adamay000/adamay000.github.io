@@ -1,0 +1,20 @@
+﻿<!DOCTYPE html>
+<html dir="ltr" lang="ja">
+<head>
+	<meta charset="utf-8" />
+	<title>Move</title>
+	<script type="text/javascript" src="./code.js"></script>
+</head> 
+<body>
+	<div id="shifter">
+		<p class="value"><img src="./images/code_x.gif" width="8" height="5" class="x" />X:<input type="text" name="x" value="" id="x" /><img src="./images/code_y.gif" width="5" height="8" class="y" />Y:<input type="text" name="y" value="" id="y" /></p>
+		<p>Copy-paste your code here.<br /><textarea cols="60" rows="8" id="code"></textarea></p>
+		<p class="button"><button onclick="convert()">Shift</button><button onclick="br()">Shift with new-lines</button><button onclick="unbr()">shift without new-lines</button></p>
+		<p class="result"><textarea cols="60" rows="8" id="result"></textarea></p>
+		<p class="button"><button onclick="allselect('code')">select(original)</button><button onclick="allselect('result')">select(result)</button></p>
+		<p>I only tested on firefox</p>
+	</div>
+	<p>coded by Viprin</p>
+	<p><a href="../">Viprin's Drawing Editor!</a></p>
+</body>
+</html>

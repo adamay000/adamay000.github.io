@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="utf-8">
+	<title>a</title>
+</head>
+<body>
+
+<p>Your XML</p>
+<textarea id="a"></textarea>
+<p>
+<input type="submit" id="c" value="background -&gt; foreground" />
+<input type="submit" id="d" value="foreground -&gt; background" />
+</p>
+<p>Result</p>
+<textarea id="b"></textarea>
+<script type="text/javascript">
+var $ = function(t){ return document.getElementById(t); };
+var a = $('a');
+var b = $('b');
+var c = $('c');
+var d = $('d');
+c.onclick = function(){
+	b.value = a.value.split(',0"/>').join(',1"/>');
+};
+d.onclick = function(){
+	b.value = a.value.split(',1"/>').join(',0"/>');
+};
+</script>
+</body>
+</html>

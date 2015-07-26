@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="ja">
+<head>
+	<meta charset="utf-8" />
+	<title>Viprin's Drawing Editor!</title>
+	<link rel="stylesheet" type="text/css" media="screen,projection" href="./common.css" />
+	<link rel="stylesheet" href="./colorpicker.css" type="text/css" />
+	<script type="text/javascript" src="./jquery.js"></script>
+	<script type="text/javascript" src="./jquery.center.js"></script>
+	<script type="text/javascript" src="./processing.js"></script>
+	<script type="text/javascript" src="./jquery-ui.js"></script>
+	<script type="text/javascript" src="./yui-min.js"></script>
+	<script type="text/javascript" src="./slider.js"></script>
+	<script type="text/javascript" src="./colorpicker.js"></script>
+	<script type="text/javascript" src="./draw.js"></script>
+</head>
+<body>
+
+<header>
+	<h1>Viprin's Drawing Editor!</h1>
+	<p>Viprin's Drawing Editor is a tool which makes it a bit easier to draw something without editing XML directly.</p>
+	<menu type="toolbar">
+		<li class="yui3-skin-sam">
+			<label for="zoom">Zoom:</label>
+			<input id="zoom" value="1.0" name="zoom" size="3" />
+			<span class="zoom"></span>
+		</li>
+		<li>
+			<h1>Settings</h1>
+			<ul>
+				<li id="menuBackground">Background properties</li>
+				<li class="group">
+					<ul>
+						<li>Selectors</li>
+						<li id="start" class="on">Show "start cross" [S]</li>
+						<li id="middle" class="on">Show "middle cross" [M]</li>
+						<li id="end" class="on">Show "end cross" [E]</li>
+						<li id="bezier1" class="on">Show "bezier1"</li>
+						<li id="bezier2" class="on">Show "bezier2"</li>
+					</ul>
+				</li>
+				<li id="scroll" class="off">Set L="1600"</li>
+				<li id="scrollH" class="off">Set H="800"</li>
+			</ul>
+		</li>
+		<li>
+			<h1>Save/Load</h1>
+			<ul>
+				<li id="menuLoad">Load XML</li>
+				<li id="menuXML">Generate XML(Recommended)</li>
+				<li id="menuXMLcompress">Generate XML with compressing</li>
+				<li id="menuXMLcjobjects">Generate XML for cjobjects</li>
+			</ul>
+		</li>
+		<li>
+			<h1>Help</h1>
+			<ul>
+				<li id="menuHelp">Help</li>
+				<li id="menuHistory">History</li>
+				<li id="menuLog">Changelog</li>
+				<li id="menuForum"><a href="http://www.transformice.com/forum/?s=162564" target="_blank">Visit thread on TFM forum</a></li>
+			</ul>
+		</li>
+	</menu>
+</header>
+
+<main>
+	<p class="loading">Loading scripts...</p>
+	<ul>
+		<li>You need to have javascript enabled in your browser.</li>
+		<li>What is your browser? IE is not recommended.</li>
+		<li>Are there any problems? Report them on <a href="http://www.transformice.com/forum/?s=162564" target="_blank">Forum!</a></li>
+	</ul>
+</main>
+
+<section id="menu">
+	<article id="layer" class="draggable">
+		<h1>Layer</h1>
+		<p id="layerInfo">Layer: 1, Elements: 0</p>
+		<button id="addLayer">New layer</button>
+		<ul id="layers">
+			<li>layer</li>
+		</ul>
+	</article>
+	<article id="selected" class="draggable">
+		<h1>Selected Element</h1>
+		<table>
+			<tr>
+				<th>Z</th>
+				<td colspan="2"><input type="text" id="selectedZ" /> <img src="./images/tree_off.gif" id="elementOrderDown" alt="-"> <img src="./images/tree_on.gif" id="elementOrderUp" alt="+"> <button class="disable" id="selectedDelete">DELETE</button></td>
+			</tr>
+			<tr>
+				<th>P1</th>
+				<td>X: <input type="text" id="selectedX1" /></td>
+				<td>Y: <input type="text" id="selectedY1" /></td>
+			</tr>
+			<tr>
+				<th>P2</th>
+				<td>X: <input type="text" id="selectedX2" /></td>
+				<td>Y: <input type="text" id="selectedY2" /></td>
+			</tr>
+			<tr>
+				<th>C1</th>
+				<td>X: <input type="text" id="selectedC1X" /></td>
+				<td>Y: <input type="text" id="selectedC1Y" /></td>
+			</tr>
+			<tr>
+				<th>C2</th>
+				<td>X: <input type="text" id="selectedC2X" /></td>
+				<td>Y: <input type="text" id="selectedC2Y" /></td>
+			</tr>
+			<tr>
+				<th>Color: </th>
+				<td colspan="2">
+					<input type="text" maxlength="6" size="8" class="cp selected" id="selectedColor" value="" />
+					<button class="disable" id="selectedForeground">BACKGROUND</button>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3" class="slider">
+					<div class="yui3-skin-sam">
+						<label for="selectedWeight">Weight:</label>
+						<input id="selectedWeight" value="" name="selectedWeight" size="16" />
+						<span class="selectedWeight"></span>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3" class="slider">
+					<div class="yui3-skin-sam">
+						<label for="selectedAlpha">Alpha:</label>
+						<input id="selectedAlpha" value="" name="selectedAlpha" size="16" />
+						<span class="selectedAlpha"></span>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3"><hr /></td>
+			</tr>
+			<tr>
+				<td colspan="3" class="slider">
+					<div class="yui3-skin-sam">
+						<label for="selectedFineness">Fineness:</label>
+						<input id="selectedFineness" value="" name="selectedFineness" size="16" />
+						<span class="selectedFineness"></span>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</article>
+	<article id="linetool" class="draggable">
+		<h1>Draw Tool</h1>
+		<div>
+			<canvas id="preview" width="180" height="180"></canvas>
+			<p>
+			Color: <input type="text" maxlength="6" size="8" class="cp line" id="color" value="ffffff" />
+			<button class="off" id="foreground">BACKGROUND</button>
+			</p>
+			<div class="yui3-skin-sam">
+				<label for="weight">Weight:</label>
+				<input id="weight" value="2" name="weight" size="16" />
+				<span class="weight"></span>
+				<br />
+				<label for="alpha">Alpha:</label>
+				<input id="alpha" value="100" name="alpha" size="16" />
+				<span class="alpha"></span>
+			</div>
+			<hr />
+			<input type="checkbox" id="bezier" /> Use Bezier curve<br />
+			<div class="yui3-skin-sam">
+				<label for="fineness">Fineness:</label>
+				<input id="fineness" value="30" name="fineness" size="16" />
+				<span class="fineness"></span>
+			</div>
+		</div>
+	</article>
+</section>
+
+<section id="popup">
+	<article id="background">
+		<h1>Background properties</h1>
+		<p>You can import an image from WEB or YOUR COMPUTER.</p>
+		<dl>
+			<dt>Q. Is it possible to show an image in my map?</dt>
+			<dd>A. No. This function is to help efficiency of your drawing.</dd>
+			<dt>Q. How can I move the image?</dt>
+			<dd>A. Drag your mouse with holding "I" key. I + DRAG(LEFT)</dd>
+			<dt>Q. It doesn't load the image.</dt>
+			<dd>A. Try again. It often fail to load at the first time.</dd>
+		</dl>
+		<hr />
+		<h2>Enter url to import an image from WEB.</h2>
+		<p><input type="text" name="image" id="bgImageWeb" size="64" /><button id="backgroundWeb">Load</button></p>
+		<br />
+		<h2>Choose an image file from YOUR COMPUTER.</h2>
+		<p><input type="file" name="image" id="bgImageLocal" size="64" /></p>
+		<hr />
+		<div class="yui3-skin-sam">
+			<label for="imgAlpha">imgAlpha:</label>
+			<input id="imgAlpha" value="100" name="imgAlpha" size="16" />
+			<span class="imgAlpha"></span>
+		</div>
+		<div class="yui3-skin-sam">
+			<label for="imgZoom">imgZoom:</label>
+			<input id="imgZoom" value="1.0" name="imgZoom" size="16" />
+			<span class="imgZoom"></span>
+		</div>
+		<p>Do you want to show an image on your drawing?:<br /><button id="imgForeground" class="off">BACKGROUND</button></p>
+		<br />
+		<p>BackgroundColor: <input type="text" maxlength="6" size="8" class="cp backgroundColor" id="backgroundColor" value="6a7495" /> (Transformice default color is #6a7495)</p>
+	</article>
+	<article id="history">
+		<h1>History</h1>
+		<p>You can UNDO/REDO your previous actions below.</p>
+		<dl class="row">
+			<dt>UNDO</dt>
+			<dd>Z key</dd>
+			<dt>REDO</dt>
+			<dd>Y key</dd>
+		</dl>
+		<hr />
+		<ul>
+			<li>History</li>
+		</ul>
+	</article>
+	<article id="xml">
+		<h1 id="xmlTitle">Generate XML</h1>
+		<p>That's simple. Copy-Paste the XML below to tfm editor.</p>
+		<dl>
+			<dt>Q. I can't load xml in tfm editor. It says 'This map is invalid'.</dt>
+			<dd>A. Your XML is too long to load. 20KB is the limit tfm can load. You need to reduce some lines.</dd>
+			<dt>Q. Nothing is shown when I load my XML. What's wrong?</dt>
+			<dd>A. You should play the map. Your drawing is not shown in edit screen. Also, your map needs to have 1 ground at least.</dd>
+			<dt>Q. What are those strange tags such as VL and VC?</dt>
+			<dd>A. They include layer/curve data. You can remove them when you load your XML in tfm editor. However you can't load your XML in this editor without them.</dd>
+		</dl>
+		<hr />
+		<p id="xmlCaution">&nbsp;</p>
+		<textarea id="xmlText" wrap="hard"></textarea>
+		<button id="xmlSelect">Select</button>
+	</article>
+	<article id="load">
+		<h1>Load</h1>
+		<p>It only loads JD tags and unique tags used in this editor. Other tags such as JPL will be ignored(including M1 and M2 attributes).</p>
+		<hr />
+		<textarea id="xmlLoad"></textarea>
+		<button id="xmlLoadButton">Load</button>
+	</article>
+	<article id="log">
+		<h1>Changelog</h1>
+		<dl>
+			<dt>18/06/14 - Version 1.4.6</dt>
+			<dd>Fixed the guideline for H="800".</dd>
+			<dt>17/04/14 - Version 1.4.5</dt>
+			<dd>Efficiency/Bug-fix update.</dd>
+			<dd>Fixed Undo/Redo is broken after loading XML.</dd>
+			<dd>Capacity is now shown in layer window.</dd>
+			<dt>08/04/14 - Version 1.4.4</dt>
+			<dd>Added vertical scroll option.</dd>
+			<dt>11/02/13 - Version 1.4.3</dt>
+			<dd>Added "Generate XML for cjobjects".</dd>
+			<dt>11/02/13 - Version 1.4.2</dt>
+			<dd>Improved compressing function.</dd>
+			<dt>09/02/13 - Version 1.4.1</dt>
+			<dd>Fixed "flip layer" doesn't work properly for curve.</dd>
+			<dt>09/02/13 - Version 1.4.0</dt>
+			<dd>Added layer related functions. Copy/Merge/Flip/Move are now available.</dd>
+			<dd>Fixed a bug.</dd>
+			<dt>08/02/13 - Version 1.3.6</dt>
+			<dd>Fixed some bugs.</dd>
+			<dt>02/02/13 - Version 1.3.5</dt>
+			<dd>Added a property that you can show an image in front.</dd>
+			<dd>Fixed keypress problems.</dd>
+			<dt>30/01/13 - Version 1.3.4</dt>
+			<dd>You are now able to change Z value of elements from input box.</dd>
+			<dt>06/01/13 - Version 1.3.3</dt>
+			<dd>Improved loading function.</dd>
+			<dt>06/01/13 - Version 1.3.2</dt>
+			<dd>Added imzZoom.</dd>
+			<dt>05/01/13 - Version 1.3.1</dt>
+			<dd>Fixed it can't load an image from local.</dd>
+			<dt>05/01/13 - Version 1.3.0</dt>
+			<dd>Added "Background properties".</dd>
+			<dd>Added Undo(Z key) and Redo(Y key).</dd>
+			<dd>Changed layout.</dd>
+			<dd>Changed a lot of small things.</dd>
+			<dd>Fixed keypress problem.</dd>
+			<dt>27/12/12 - Version 1.2.6</dt>
+			<dd>Fixed a bug.</dd>
+			<dt>22/12/12 - Version 1.2.5</dt>
+			<dd>Added Copy(C key) and Paste(V key).</dd>
+			<dd>Added scroll option.</dd>
+			<dt>21/12/12 - Version 1.2.4</dt>
+			<dd>Fixed layer related problem.</dd>
+			<dt>20/12/12 - Version 1.2.3</dt>
+			<dd>Fixed curve related problems.</dd>
+			<dd>Changed the limit of fineness to 30 from 120.</dd>
+			<dd>Added "Generate min XML". You can't load the xml in this editor when you choose this.</dd>
+			<dt>19/12/12 - Version 1.2.2</dt>
+			<dd>Fixed "SPACE + DRAG".</dd>
+			<dt>19/12/12 - Version 1.2.1</dt>
+			<dd>Capacity is shown at the left top when it generates XML.</dd>
+			<dt>19/12/12 - Version 1.2.0</dt>
+			<dd>Added "curve tool"! You can draw curve by using bezier.</dd>
+			<dd>Fixed "some window cannot be placed on other window".</dd>
+			<dt>18/12/12 - Version 1.1.1</dt>
+			<dd>Fixed an error.</dd>
+			<dt>18/12/12 - Version 1.1.0</dt>
+			<dd>Added "Zoom".</dd>
+			<dt>17/12/12 - Version 1.0.1</dt>
+			<dd>Fixed color selecting problem.</dd>
+			<dt>17/12/12 - Version 1.0.0</dt>
+			<dd>Added "Selected Element". You can edit the line now!</dd>
+			<dt>16/12/12 - Version 0.9.1</dt>
+			<dd>Fixed "Generate XML".</dd>
+			<dt>16/12/12 - Version 0.9.0</dt>
+			<dd>Added "Layer".</dd>
+			<dt>15/12/12 - Version 0.8.2</dt>
+			<dd>Changed some stuffs.</dd>
+			<dt>12/12/12 - Version 0.8.1</dt>
+			<dd>Fixed "can't load alpha" problem.</dd>
+			<dt>11/12/12 - Version 0.8.0</dt>
+			<dd>Added line tool, loading function.</dd>
+			<dt>10/12/12 - Version 0.7.0</dt>
+			<dd>Prereleased.</dd>
+		</dl>
+	</article>
+	<article id="help">
+		<h1>Help</h1>
+		<p>Viprin's Drawing Editor helps you make a map in <a href="http://www.transformice.com/" target="_blank">Transformice</a>!</p>
+		<hr />
+		<h2>How to use</h2>
+		<p>There's tutorial video how to use this editor. Thank you very much Impuredeath for his time and help!</p>
+		<div style="padding: 16px;"><iframe width="640" height="360" src="http://www.youtube.com/embed/uVsxE0Ljq3Q?feature=player_detailpage" frameborder="0" allowfullscreen></iframe></div>
+		<hr />
+		<h2>Tips</h2>
+		<ul>
+			<li>There's no auto-save function. You are better to save by your self diligently.</li>
+			<li>There's a limit size of the XML Transformice can load.</li>
+			<li>Bezier curve spends much of your XML capacity. 1 curve with Fineness=30 equals to 10 straight lines.</li>
+			<li>There are some shortcut keys. They are listed hereunder.</li>
+			<li>Right-click the layer name opens layer related functions.</li>
+		</ul>
+		<hr />
+		<h2>FAQ</h2>
+		<dl>
+			<dt>Q. What is possible with this editor?</dt>
+			<dd>A. It helps you make a graphical map. With this editor, you don't have to edit XML directly to draw something. However, this editor doesn't convert image to XML automatically, so you need to draw everything by yourself. Of course, there are some functions which make it efficiency.</dd>
+			<dt>Q. Crosses are in the way. Can I remove them?</dt>
+			<dd>A. Yes. Open "Settings" in the top of screen, then click "Show xxx cross".</dd>
+			<dt>Q. I want to draw on the outside. How can I move canvas?</dt>
+			<dd>A. You can move canvas by dragging with holding SPACE key. SPACE + DRAG(LEFT)</dd>
+			<dt>Q. What is layer?</dt>
+			<dd>A. Layer is a group of lines. You can manage your lines together. And you can move/copy/flip layer by right-clicking the layer name.</dd>
+			<dt>Q. How can I color my drawing?</dt>
+			<dd>A. You need to fill up by using thick lines. There's no bucket.</dd>
+			<dt>Q. How can I make moveable art?</dt>
+			<dd>A. Right-click the layer name, and choose Z value, then click "Link". <a href="./images/howtoconnect.gif" target="_blank">This image might help you</a>.</dd>
+			<dt>Q. How can I make touchable art?</dt>
+			<dd>A. You need to add invisible grounds manually.</dd>
+			<dt>Q. I want to move whole arts/grounds.</dt>
+			<dd>A. <a href="./move/" target="_blank">Here's another tool I made an age ago.</a></dd>
+			<dt>Q. My art is shown behind the ground. How can I fix it?</dt>
+			<dd>A. Make your lines as "foreground". There are buttons which can toggle foreground/background.</dd>
+		</dl>
+		<hr />
+		<h2>Actions</h2>
+		<dl>
+			<dt>Drag(LEFT)</dt>
+			<dd>Draw new line.</dd>
+			<dt>SPACE + Drag(LEFT)</dt>
+			<dd>Move canvas.</dd>
+			<dt>R, ESC</dt>
+			<dd>Reset canvas place.</dd>
+			<dt>D, DELETE</dt>
+			<dd>Delete an element.</dd>
+			<dt>C</dt>
+			<dd>Copy an element.</dd>
+			<dt>V</dt>
+			<dd>Paste an element.</dd>
+			<dt>Z</dt>
+			<dd>Undo.</dd>
+			<dt>Y</dt>
+			<dd>Redo.</dd>
+			<dt>LEFT, UP, RIGHT, DOWN</dt>
+			<dd>Move an element to each direction.</dd>
+			<dt>I + DRAG(LEFT)</dt>
+			<dd>Move the image.</dd>
+			<dt>S, M, E</dt>
+			<dd>Toggle selecter.</dd>
+		</dl>
+		<hr />
+		<h2>Last</h2>
+		<p>If you have questions, feel free to ask it in <a href="http://www.transformice.com/forum/?s=162564" target="_blank">here</a>. Bug reports are also welcome.</p>
+		<p style="margin-bottom: 32px;">I'm grateful to everybody who has helped me.</p>
+	</article>
+</section>
+
+</body>
+</html>
