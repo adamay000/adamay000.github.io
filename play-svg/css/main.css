@@ -1,0 +1,34 @@
+body {
+  margin: 0;
+  font-family: 'Dosis', sans-serif; }
+
+svg {
+  background: #bebebe; }
+  svg text {
+    fill: #fff; }
+
+.button {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  text-align: center; }
+  .button a {
+    display: inline-block;
+    margin: 0 20px;
+    font-size: 20px;
+    line-height: 20px;
+    text-decoration: none;
+    color: #eaeaea; }
+    .button a:hover {
+      color: #ffffff; }
+    .button a.off {
+      text-decoration: line-through; }
+  .button input {
+    width: 400px;
+    border: 0;
+    border-bottom: 1px #eaeaea solid;
+    padding: 10px 20px;
+    background: #bebebe;
+    text-align: center;
+    outline: 0;
+    color: #eaeaea; }
