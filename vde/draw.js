@@ -64,12 +64,12 @@ Layers.prototype = {
 	{
 		var s = this.saveLayer(target);
 		var res = this.addLayer();
-		
+
 		this.layers[res].nameChange("Copy of " + s.name);
 		this.layers[res].setLink(s.link);
 		this.layers[res].setDisplay(s.display);
 		this.layers[res].setTree(s.tree);
-		
+
 		for(var i=0;i<s.elements.length;i++) {
 			var el = s.elements[i];
 			if(el.c1x == undefined) {
@@ -78,7 +78,7 @@ Layers.prototype = {
 				this.layers[res].addCurveWithC([el.x1, el.y1], [el.x2, el.y2], [el.c1x, el.c1y], [el.c2x, el.c2y], el.color, el.weight, el.alpha, el.foreground, el.fineness);
 			}
 		}
-		
+
 		return res;
 	},
 	//レイヤーの反転
@@ -132,7 +132,7 @@ Layers.prototype = {
 			sumX += els[i].x1 + els[i].x2;
 		}
 		var x = Math.round(sumX / 2 / els.length);
-		
+
 		for(i=0;i<els.length;i++) {
 			var el = this.layers[target].elements[i];
 			var x1 = Math.floor(x + Math.cos(rot)*(el.x1 - x) - Math.sin(rot)*(el.y1 - y));
@@ -783,7 +783,7 @@ Hist.prototype = {
 		var d = h.d;
 		var layer = this.layer;
 		var layers = this.layer.layers;
-		
+
 		return {
 			delElement: function()
 			{
@@ -984,7 +984,7 @@ Hist.prototype = {
 						layers[tar].addCurveWithC([el.x1, el.y1], [el.x2, el.y2], [el.c1x, el.c1y], [el.c2x, el.c2y], el.color, el.weight, el.alpha, el.foreground, el.fineness);
 					}
 				}
-				
+
 				while(tar > d.layer) {
 					tar = layer.orderDown(tar);
 				}
@@ -1171,13 +1171,11 @@ var Draw = function(p) {
 	var scroll = 0;							//スクロール
 	var scrollH = 0;							//たてスクロール
 	var capacity = 0;						//容量
-		
+
 	var information = $("#information");
-	
+
 	var ctx = canvas.getContext('2d');		//画像表示用
 	var img = new Image();					//画像表示用
-	img.src = "";
-	var imgUrl = "";						//画像のurl
 	var imgWidth = 0;						//画像の長さ
 	var imgHeight = 0;						//画像の高さ
 	var imgX = 0;							//画像表示位置
@@ -1187,18 +1185,18 @@ var Draw = function(p) {
 	var imgAlpha = 1;						//画像透過率
 	var imgZoom = 1;						//画像拡大縮小用
 	var imgForeground = 0;					//画像を前面に表示させるか
-	
+
 	var copyElement;						//エレメントコピー用
-		
+
 	var backgroundColor = "6a7495";			//背景色
-	
+
 	var weight = 2;
 	var color = "ffffff";
 	var alpha = 1;
 	var foreground = 0;
 	var bezier = false;
 	var fineness = 20;
-	
+
 	//順に始点、中点、終点、ターゲット
 	var helper = {
 		start: 1,
@@ -1208,13 +1206,13 @@ var Draw = function(p) {
 		bezier1: 1,
 		bezier2: 1
 	};
-	
+
 	var layer = new Layers();
 	var layers = layer.layers;
 	var hist = new Hist(layer);
 	p.hist = hist;
 	var els = layers[0].elements;
-	
+
 	var setCardinal = function(xy) {
 		cardinal[0] = xy[0];
 		cardinal[1] = xy[1];
@@ -1309,7 +1307,7 @@ var Draw = function(p) {
 			if(newline[0] != newline[3] && newline[2] != newline[4])
 				p.LINE([newline[0], newline[1]], [newline[2], newline[3]], color, weight, alpha*100);
 		}
-		
+
 		var el = els[pretarget];
 
 		if(el != undefined) {
@@ -1582,7 +1580,7 @@ var Draw = function(p) {
 					el = els[i];
 					selecting = els.length-i-1;
 				}
-				
+
 				if(el.c1x != undefined) {
 					if(helper.bezier1 && distance(mouse2, [el.c1x, el.c1y]) < 7/getZoom()) {
 						p.cursor(p.HAND);
@@ -1598,7 +1596,7 @@ var Draw = function(p) {
 						break;
 					}
 				}
-				
+
 				if(helper.middle && distance(mouse2, [(el.x1+el.x2)/2, (el.y1+el.y2)/2]) < 7/getZoom()) {
 					p.cursor(p.MOVE);
 					if(mode != "move2") p.wait();
@@ -1619,7 +1617,7 @@ var Draw = function(p) {
 					pretarget = selecting;
 					break;
 				}
-				
+
 				p.cursor(p.ARROW);
 				if(mode != "new") p.wait();
 				mode = "new";
@@ -1775,12 +1773,12 @@ var Draw = function(p) {
 	{
 		target = value;
 		if(target < 0) target = 0;
-		
+
 		if(layers[layer.target].elements[target] == undefined) {
 			mode = "new";
 			p.cursor(p.ARROW);
 		}
-		
+
 		p.setSelected(target);
 		p.updateSelectedSlider();
 		p.layerDisplay();
@@ -1955,29 +1953,10 @@ var Draw = function(p) {
 	p.setAlpha = function(value)			{ alpha = value/100; };
 	p.setForeground = function(value	)	{ foreground ^= 1; return foreground; };
 	p.setBackgroundImage = function(from, f){
+		img = new Image();
 		if(from=="web") {
-			img.src = $("#bgImageWeb").val();
-			if(img.height > 0) {
-				imgX = 0;
-				imgY = 0;
-				imgWidth = img.width;
-				imgHeight = img.height;
-					imgZoom = 1;
-				p.wait();
-			} else {
-				imgWidth = 0;
-				imgHeight = 0;
-				alert("Image does not exist.");
-			}
-		} else if(from=="local") {
-			if(!f.files.length) return;
-			if(!f.files[0].type.match('image.*')) return;
-			var fr = new FileReader();
-			fr.onload = function(e) {
-				//一回だとimg.widthが読み込まれない?
-				img.src = e.target.result;
-				img.src = e.target.result;
-				if(img.width > 0 && img.height > 0) {
+			img.onload = function() {
+				if(img.height > 0) {
 					imgX = 0;
 					imgY = 0;
 					imgWidth = img.width;
@@ -1989,6 +1968,28 @@ var Draw = function(p) {
 					imgHeight = 0;
 					alert("Image does not exist.");
 				}
+			};
+			img.src = $("#bgImageWeb").val();
+		} else if(from=="local") {
+			if(!f.files.length) return;
+			if(!f.files[0].type.match('image.*')) return;
+			var fr = new FileReader();
+			fr.onload = function(e) {
+				img.onload = function() {
+					if(img.width > 0 && img.height > 0) {
+						imgX = 0;
+						imgY = 0;
+						imgWidth = img.width;
+						imgHeight = img.height;
+						imgZoom = 1;
+						p.wait();
+					} else {
+						imgWidth = 0;
+						imgHeight = 0;
+						alert("Image does not exist.");
+					}
+				};
+				img.src = e.target.result;
 			};
 			fr.readAsDataURL(f.files[0]);
 		}
@@ -2106,7 +2107,7 @@ var Draw = function(p) {
 		p.wait();
 	};
 	p.moveLayer = function(tar, x_, y_) {
-	
+
 		var x = parseInt(x_);
 		var y = parseInt(y_);
 		layer.moveLayer(tar, x, y);
@@ -2118,7 +2119,7 @@ var Draw = function(p) {
 		p.wait();
 	};
 	p.rotateLayer = function(tar, rot_) {
-	
+
 		var rot = parseInt(rot_);
 		layer.rotateLayer(tar, rot);
 		p.wait();
@@ -2175,7 +2176,7 @@ var Draw = function(p) {
 			if(ifselected == "c2y")			value = el.c2y;
 			if(ifselected == "color")		value = el.color;
 			if(ifselected == "foreground")	value = el.foreground;
-			
+
 			if(ifselected == "weight") {
 				if(el.weight != newValue) value = el.weight;
 			}
@@ -2188,9 +2189,9 @@ var Draw = function(p) {
 				}
 			}
 		}
-		
+
 		var res = layers[layerTar].updateElement(tar);
-		
+
 		if(ifselected == undefined) {
 			//p.setSelected();
 		} else {
@@ -2242,7 +2243,7 @@ var Draw = function(p) {
 	p.elementOrderChange = function(value) {
 		value = parseInt(value);
 		if(isNaN(value)) return;
-		
+
 		var saveTarget = target;
 		var res = layers[layer.target].orderChange(target, value);
 		if(res != target) {
@@ -2419,7 +2420,7 @@ var Draw = function(p) {
 		c2[0] = getZoomedXY(c2).x;
 		c2[1] = getZoomedXY(c2).y;
 		p.strokeWeight(w);
-		
+
 		var points = getCurve(xy1, xy2, c1, c2, fineness);
 		for(var i in points) {
 			var q = points[i];
@@ -2455,9 +2456,9 @@ var Draw = function(p) {
 			ctx.restore();
 		}
 	};
-	
-	
-	
+
+
+
 	/*########################################*/
 	p.format = function()
 	{
@@ -2888,7 +2889,7 @@ function getCurve(xy1, xy2, c1, c2, fineness)
 		bp.y = processing.bezierPoint(p[1], p1[1], p2[1], p3[1], t);
 		bp.tx = processing.bezierTangent(p[0], p1[0], p2[0], p3[0], t);
 		bp.ty = processing.bezierTangent(p[1], p1[1], p2[1], p3[1], t);
-		
+
 		t0 = t;
 	*/
 	var res = [];
@@ -2906,7 +2907,7 @@ function getCurve(xy1, xy2, c1, c2, fineness)
 	var p10 = [xy1[0], xy1[1]];
 	for(var i=1;i<=fineness;i++) {
 		t = i / fineness;
-		
+
 		p4 = [
 			p0[0]+(p1[0]-p0[0])*t,
 			p0[1]+(p1[1]-p0[1])*t
@@ -2945,8 +2946,8 @@ function getCurve(xy1, xy2, c1, c2, fineness)
 		var x2 = p.bezierPoint(p0[0], p1[0], p2[0], p3[0], t2);
 		var y2 = p.bezierPoint(p0[1], p1[1], p2[1], p3[1], t2);
 		p.line(Math.round(x+getTfmX()), Math.round(y+getTfmY()), Math.round(x2+getTfmX()), Math.round(y2+getTfmY()));
-		
-		
+
+
 		var x = (1-t)*(1-t)*(1-t)*p0[0] + 3*(1-t)*(1-t)*t*p1[0] + 3*(1-t)*t*t*p2[0] + t*t*t*p3[0];
 		var y = (1-t)*(1-t)*(1-t)*p0[1] + 3*(1-t)*(1-t)*t*p1[1] + 3*(1-t)*t*t*p2[1] + t*t*t*p3[1];
 		p.line(Math.round(x+getTfmX()), Math.round(y+getTfmY()), Math.round(x2+getTfmX()), Math.round(y2+getTfmY()));
@@ -2990,7 +2991,7 @@ function generateXML(ifmin)
 		if(!min) res += '<VL n="' + layers[i].name + '"l="' + layers[i].link + '"/>';
 		for(var j=0;j<layers[i].elements.length;j++)
 		{
-		
+
 			el = layers[i].elements[j];
 			if(!el.display) continue;
 			cnt++;
@@ -3013,7 +3014,7 @@ function generateXML(ifmin)
 					c += ','+el.weight+','+el.alpha+','+el.foreground;
 				}
 				c += '"';
-				
+
 				if(layers[i].link != -1 || min==2) {
 					if(layers[i].link != -1) c += 'M1="'+layers[i].link+'"M2="'+layers[i].link+'"';
 					for(var k=0;k<cdata.length;k++) {
@@ -3044,7 +3045,7 @@ function generateXML(ifmin)
 						} else {
 							res += 'P3="'+q1.x2+','+(q1.y2+dot)+'"';
 						}
-						
+
 						dot = 0;
 						if(q2.x1 == q2.x2 && q2.y1 == q2.y2) dot++;
 						if(q3 == undefined) {
@@ -3055,7 +3056,7 @@ function generateXML(ifmin)
 						} else {
 							res += 'P4="'+q2.x2+','+(q2.y2+dot)+'"';
 						}
-						
+
 						dot = 0;
 						if(q3.x1 == q3.x2 && q3.y1 == q3.y2) dot++;
 						if(q4 == undefined) {
@@ -3072,7 +3073,7 @@ function generateXML(ifmin)
 			} else {
 				dot = 0;
 				if(el.x1 == el.x2 && el.y1 == el.y2) dot++;
-				
+
 				c = 'c="'+el.color;
 				if(min==1) {
 					if(el.foreground != 0) {
@@ -3090,7 +3091,7 @@ function generateXML(ifmin)
 					c += ','+el.weight+','+el.alpha+','+el.foreground;
 				}
 				c += '"';
-				
+
 				res += '<JD P1="'+el.x1+','+el.y1+'"P2="'+el.x2+','+(el.y2+dot)+'"'+c;
 				if(layers[i].link != -1) res += 'M1="'+layers[i].link+'"M2="'+layers[i].link+'"';
 				res += '/>';
@@ -3126,7 +3127,7 @@ function load()
 	var layer = processing.getLayer();
 	var layers = processing.getLayers();
 	reset();
-	
+
 	var xml = $("#xmlLoad").val();
 	var p1;
 	var p2;
@@ -3136,7 +3137,7 @@ function load()
 	var f;
 	var link;
 	var first = 0; //最初にVDELをロードした場合、初期レイヤーを廃棄する
-	
+
 	$(xml).find("JD, VDEL, VL, VC").each(function(index, e)
 	{
 		var this_ = $(this);
@@ -3238,7 +3239,7 @@ var popup = (function(){
 	};
 	self.add = function( name, trigger, fn ){
 		var target = $(name);
-		
+
 		$(trigger).click(function(){
 			if( fn !== undefined ) fn();
 			for( d in data ) data[d].hide();
@@ -3295,10 +3296,10 @@ $(function() {
 	main = $('main').html('');
 	canvas = $('<canvas id="canvas"></canvas>').appendTo(main)[0];
 	processing = new Processing(canvas, Draw);
-	
+
 	var preview = $("#preview")[0];
 	processing2 = new Processing(preview, Preview);
-	
+
 	//ポップアップ用レイヤー
 	popup.init();
 	popup.add('#background', '#menuBackground');
@@ -3309,7 +3310,7 @@ $(function() {
 	popup.add('#help', '#menuHelp');
 	popup.add('#log', '#menuLog');
 	popup.add('#history', '#menuHistory', historyDisplay );
-	
+
 	//メニュー
 	$('#start').click(function(){ setHelper('start'); });
 	$('#middle').click(function(){ setHelper('middle'); });
@@ -3322,7 +3323,7 @@ $(function() {
 		window.open('http://www.transformice.com/forum/?s=162564');
 		return false;
 	});
-	
+
 	//ツール
 	$('#addLayer').click( addLayer );
 	$('#elementOrderDown').click( elementOrderDown );
@@ -3330,7 +3331,7 @@ $(function() {
 	$('#selectedDelete').click( selectedDelete );
 	$('#selectedForeground').click(function(){ selectedForeground(this) });
 	$('#foreground').click(function(){ foreground(this); });
-	
+
 	//ポップアップ
 	$('#backgroundWeb').click(function(){ setBackgroundImage('web'); });
 	$('#bgImageLocal').change(function(){ setBackgroundImage('local', this); });
@@ -3342,14 +3343,14 @@ $(function() {
 	$(window).on('beforeunload', function() {
 		return 'Are you sure you want to close this window?';
 	});
-	
+
 	//メニューにJSを割り当てる
 	$('menu > li').bind('mouseover', function(){
 		$(this).children('ul').css('display', 'block');
 	}).bind('mouseout', function(){
 		$(this).children('ul').css('display', 'none');
 	});
-	
+
 	//初期化
 	var temp = function( target, func ){
 		$('#'+target).val('12').bind('keyup', function(){
@@ -3369,13 +3370,13 @@ $(function() {
 	$('#selectedWeight').val('');
 	$('#selectedAlpha').val('');
 	$('#selectedFineness').val('');
-	
+
 	$("#bezier").bind('change', function(){
 		bezier($(this).is(':checked'));
 	});
 
 
-	
+
 	$('#zoom').val( processing.getZoom() );
 	$('#color').val( processing.getColor() )
 		.change(function(){ color($(this).val()); });
@@ -3387,7 +3388,7 @@ $(function() {
 		.change(function(){ fineness($(this).val()); });
 	$('#backgroundColor').val( processing.getBackgroundColor() )
 		.change(function(){ background($(this).val()); });
-	
+
 	var z = 10;
 	//メニュー全般
 	$('.draggable').draggable({
@@ -3411,7 +3412,7 @@ $(function() {
 			$(this).css('z-index', z++);
 		}
 	});
-	
+
 	//キー入力
 	var keycheck = {
 		cnt: 0,
@@ -3438,7 +3439,7 @@ $(function() {
 		keycheck = 0;
 		processing.KEYRELEASED( e.which );
 	});
-	
+
 	//ポップアップメッセージ
 	$('<ul id="hist"></ul>').appendTo( body );
 	history(1).add('Loaded ...');
