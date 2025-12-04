@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>inputmode 属性テスト</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .test-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-section h2 {
+            margin-top: 0;
+            color: #007bff;
+            font-size: 1.2em;
+        }
+        .test-item {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        .attributes {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.85em;
+            font-weight: normal;
+            margin-left: 10px;
+        }
+        .attr-type {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+        .attr-inputmode {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        .description {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .browser-info {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>inputmode 属性テスト</h1>
+    
+    <div class="info-box">
+        <strong>テストについて:</strong><br>
+        このページは、HTML5の<code>inputmode</code>属性の挙動を各種ブラウザで確認するためのテストページです。
+        各入力欄をタップ/クリックして、表示されるキーボードの種類を確認してください。
+    </div>
+
+    <div class="browser-info">
+        <strong>ブラウザ情報:</strong><br>
+        <span id="userAgent"></span>
+    </div>
+
+    <div class="test-section">
+        <h2>基本的なテキスト入力</h2>
+        
+        <div class="test-item">
+            <label for="none">inputmode="none"</label>
+            <input type="text" id="none" inputmode="none" placeholder="キーボードを表示しない">
+            <div class="description">キーボードが表示されないはずです（カスタムキーボードを実装する場合に使用）</div>
+        </div>
+
+        <div class="test-item">
+            <label for="text">inputmode="text"</label>
+            <input type="text" id="text" inputmode="text" placeholder="標準のテキストキーボード">
+            <div class="description">標準のテキストキーボードが表示されます（デフォルト）</div>
+        </div>
+
+        <div class="test-item">
+            <label for="no-inputmode">inputmode 指定なし</label>
+            <input type="text" id="no-inputmode" placeholder="属性なし">
+            <div class="description">inputmode属性を指定していない場合の標準動作</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>数値入力</h2>
+        
+        <div class="test-item">
+            <label for="numeric">inputmode="numeric"</label>
+            <input type="text" id="numeric" inputmode="numeric" placeholder="数値キーボード">
+            <div class="description">数字キーボードが表示されます（0-9と一部の記号）</div>
+        </div>
+
+        <div class="test-item">
+            <label for="decimal">inputmode="decimal"</label>
+            <input type="text" id="decimal" inputmode="decimal" placeholder="小数点付き数値キーボード">
+            <div class="description">小数点を含む数値キーボードが表示されます</div>
+        </div>
+
+        <div class="test-item">
+            <label for="tel">inputmode="tel"</label>
+            <input type="text" id="tel" inputmode="tel" placeholder="電話番号キーボード">
+            <div class="description">電話番号入力用のキーボードが表示されます</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>特殊な入力形式</h2>
+        
+        <div class="test-item">
+            <label for="email">inputmode="email"</label>
+            <input type="text" id="email" inputmode="email" placeholder="メールアドレス">
+            <div class="description">メールアドレス入力に最適化されたキーボード（@や.が入力しやすい）</div>
+        </div>
+
+        <div class="test-item">
+            <label for="url">inputmode="url"</label>
+            <input type="text" id="url" inputmode="url" placeholder="https://">
+            <div class="description">URL入力に最適化されたキーボード（/や.comなど）</div>
+        </div>
+
+        <div class="test-item">
+            <label for="search">inputmode="search"</label>
+            <input type="text" id="search" inputmode="search" placeholder="検索キーワード">
+            <div class="description">検索用に最適化されたキーボード（Enterキーが「検索」になるなど）</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>type属性との組み合わせ</h2>
+        
+        <div class="test-item">
+            <label for="type-number">type="number" (inputmode指定なし)</label>
+            <input type="number" id="type-number" placeholder="type=number">
+            <div class="description">type="number"のデフォルト動作</div>
+        </div>
+
+        <div class="test-item">
+            <label for="type-tel">type="tel" (inputmode指定なし)</label>
+            <input type="tel" id="type-tel" placeholder="type=tel">
+            <div class="description">type="tel"のデフォルト動作</div>
+        </div>
+
+        <div class="test-item">
+            <label for="type-email">type="email" (inputmode指定なし)</label>
+            <input type="email" id="type-email" placeholder="type=email">
+            <div class="description">type="email"のデフォルト動作</div>
+        </div>
+
+        <div class="test-item">
+            <label for="type-number-text">type="number" + inputmode="text"</label>
+            <input type="number" id="type-number-text" inputmode="text" placeholder="type=number + inputmode=text">
+            <div class="description">inputmodeがtypeより優先されるかのテスト</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>textarea での動作</h2>
+        
+        <div class="test-item">
+            <label for="textarea-text">textarea + inputmode="text"</label>
+            <textarea id="textarea-text" inputmode="text" rows="3" placeholder="複数行テキスト"></textarea>
+            <div class="description">textareaでのinputmode動作確認</div>
+        </div>
+
+        <div class="test-item">
+            <label for="textarea-numeric">textarea + inputmode="numeric"</label>
+            <textarea id="textarea-numeric" inputmode="numeric" rows="3" placeholder="数値のみの複数行入力"></textarea>
+            <div class="description">textareaで数値キーボードが表示されるか</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>contenteditable での動作</h2>
+        
+        <div class="test-item">
+            <label>contenteditable + inputmode="numeric"</label>
+            <div contenteditable="true" inputmode="numeric" style="border: 2px solid #ddd; padding: 12px; border-radius: 4px; min-height: 50px;">
+                編集可能なdiv要素
+            </div>
+            <div class="description">contenteditable要素でのinputmode動作確認</div>
+        </div>
+    </div>
+
+    <script>
+        // ブラウザ情報を表示
+        document.getElementById('userAgent').textContent = navigator.userAgent;
+
+        // 各入力欄に属性情報を表示
+        function displayAttributes() {
+            const inputs = document.querySelectorAll('input, textarea, [contenteditable]');
+            inputs.forEach(input => {
+                const label = input.previousElementSibling;
+                if (label && label.tagName === 'LABEL') {
+                    // 既存の属性表示を削除
+                    const existingAttrs = label.querySelectorAll('.attributes');
+                    existingAttrs.forEach(attr => attr.remove());
+                    
+                    // type属性の表示（全てのtypeを表示）
+                    const typeAttr = input.type;
+                    if (typeAttr) {
+                        const typeSpan = document.createElement('span');
+                        typeSpan.className = 'attributes attr-type';
+                        typeSpan.textContent = `type="${typeAttr}"`;
+                        label.appendChild(typeSpan);
+                    }
+                    
+                    // inputmode属性の表示
+                    const inputmodeAttr = input.getAttribute('inputmode');
+                    if (inputmodeAttr) {
+                        const inputmodeSpan = document.createElement('span');
+                        inputmodeSpan.className = 'attributes attr-inputmode';
+                        inputmodeSpan.textContent = `inputmode="${inputmodeAttr}"`;
+                        label.appendChild(inputmodeSpan);
+                    } else {
+                        // inputmode属性がない場合
+                        const noneSpan = document.createElement('span');
+                        noneSpan.className = 'attributes';
+                        noneSpan.textContent = 'inputmode なし';
+                        noneSpan.style.background = '#f5f5f5';
+                        noneSpan.style.color = '#757575';
+                        label.appendChild(noneSpan);
+                    }
+                } else if (input.hasAttribute('contenteditable')) {
+                    // contenteditable要素の場合
+                    const prevLabel = input.previousElementSibling;
+                    if (prevLabel && prevLabel.tagName === 'LABEL') {
+                        const existingAttrs = prevLabel.querySelectorAll('.attributes');
+                        existingAttrs.forEach(attr => attr.remove());
+                        
+                        const ceSpan = document.createElement('span');
+                        ceSpan.className = 'attributes';
+                        ceSpan.style.background = '#fce4ec';
+                        ceSpan.style.color = '#c2185b';
+                        ceSpan.textContent = 'contenteditable="true"';
+                        prevLabel.appendChild(ceSpan);
+                        
+                        const inputmodeAttr = input.getAttribute('inputmode');
+                        if (inputmodeAttr) {
+                            const inputmodeSpan = document.createElement('span');
+                            inputmodeSpan.className = 'attributes attr-inputmode';
+                            inputmodeSpan.textContent = `inputmode="${inputmodeAttr}"`;
+                            prevLabel.appendChild(inputmodeSpan);
+                        }
+                    }
+                }
+            });
+        }
+
+        // ページ読み込み時に属性を表示
+        displayAttributes();
+
+        // フォーカス時のログ
+        const inputs = document.querySelectorAll('input, textarea, [contenteditable]');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                console.log('Focus:', {
+                    id: this.id || 'contenteditable',
+                    inputmode: this.getAttribute('inputmode'),
+                    type: this.type || 'contenteditable'
+                });
+            });
+        });
+
+        // 入力値のログ
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                console.log('Input:', {
+                    id: this.id || 'contenteditable',
+                    value: this.value || this.textContent
+                });
+            });
+        });
+    </script>
+</body>
+</html>
